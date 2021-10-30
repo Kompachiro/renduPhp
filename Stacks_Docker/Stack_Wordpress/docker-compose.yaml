@@ -1,0 +1,38 @@
+# J'indique quelle version de docker-compose j'utilise
+version: '3.1'
+
+# Je liste ensuite les services que je veux utiliser
+services:
+    # Le nom du service
+    wordpress:
+        # L'image à utiliser, ici wordpress officiel
+        image: wordpress
+        # La politique de redémarrage en cas d'erreur fatale
+        restart: always
+        # Le mapping de ports, ici le port 8080 de mon hôte
+        # ira vers le port 80 du conteneur
+        ports:
+            - 8080:80
+        # Ensuite les variables d'environnement
+        environment:
+            WORDPRESS_DB_HOST: db
+            WORDPRESS_DB_USER: exampleuser
+            WORDPRESS_DB_PASSWORD: examplepass
+            WORDPRESS_DB_NAME: exampledb
+        # Enfin, pour facilement pérenniser mes données, je vais
+        # lier un volume sur mon hôte à un volume sur mon conteneur
+        # Ca sera plus facile en dev de partager des instances avec leurs
+        # données. Attention cependant, il faudra changer le chemin de fichier
+        volumes:
+            - ./wordpress:/var/www/html
+
+    db:
+        image: mariadb
+        restart: always
+        environment:
+            MYSQL_DATABASE: exampledb
+            MYSQL_USER: exampleuser
+            MYSQL_PASSWORD: examplepass
+            MYSQL_RANDOM_ROOT_PASSWORD: '1'
+        volumes:
+            - ./datas:/var/lib/mysql
